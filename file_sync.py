@@ -49,15 +49,15 @@ class FileChangeHandler(FileSystemEventHandler):
 
     def on_moved(self, event):
         print(event)
-        pathname = event.dest_path.replace('\\', '/')
-        if pathname in SYNC_FILE_LIST:
-            sync(pathname)
+        dest_path = event.dest_path.replace('\\', '/')
+        if dest_path in SYNC_FILE_LIST:
+            sync(dest_path)
 
     def on_created(self, event):
         print(event)
         src_path = event.src_path.replace('\\', '/')
-        if pathname in SYNC_FILE_LIST:
-            sync(pathname);
+        if src_path in SYNC_FILE_LIST:
+            sync(src_path)
 
 
 if __name__ == '__main__':
