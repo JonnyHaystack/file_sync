@@ -20,12 +20,11 @@ with open(os.path.join(DIR_FOR_GIT, 'file_list.txt'), 'r') as f:
 print(SYNC_FILE_LIST)
 
 
-def sync(pathname):
-    print(f'{pathname} changed. Syncing...')
+def sync(message):
     os.chdir(DIR_FOR_GIT)
     git_add_cmd = 'git add -A'
     git_commit_cmd = 'git commit -m ' + \
-        re.escape('Update ' + os.path.basename(pathname))
+        re.escape(message)
     if platform.system() == 'Windows':
         git_commit_cmd = 'git commit -m Update.'
     git_pull_cmd = 'git pull origin master'
@@ -37,7 +36,6 @@ def sync(pathname):
         git_push_cmd,
         shell=True
     )
-    print('Sync complete')
 
 
 class FileChangeHandler(FileSystemEventHandler):
@@ -45,19 +43,22 @@ class FileChangeHandler(FileSystemEventHandler):
         print(event)
         src_path = event.src_path.replace('\\', '/')
         if src_path in SYNC_FILE_LIST:
-            sync(src_path)
+            print(f'{src_path} changed. Syncing...')
+            sync(f'Update {src_path}')
 
     def on_moved(self, event):
         print(event)
         dest_path = event.dest_path.replace('\\', '/')
         if dest_path in SYNC_FILE_LIST:
-            sync(dest_path)
+            print(f'{dest_path} changed. Syncing...')
+            sync(f'Update {dest_path}')
 
     def on_created(self, event):
         print(event)
         src_path = event.src_path.replace('\\', '/')
         if src_path in SYNC_FILE_LIST:
-            sync(src_path)
+            print(f'{src_path} changed. Syncing...')
+            sync(f'Update {src_path}')
 
 
 if __name__ == '__main__':
@@ -75,7 +76,8 @@ if __name__ == '__main__':
 
     try:
         while True:
-            time.sleep(10)
+            sync('Pull changes')
+            time.sleep(600)
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
